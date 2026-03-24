@@ -7,34 +7,18 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: 'Segoe UI', system-ui, sans-serif;
-      background: #0a0f1a;
-      color: #e2e8f0;
-      min-height: 100vh;
-    }
-
-    header {
-      background: linear-gradient(135deg, #0c1a3a, #1e3a8a);
-      padding: 24px 32px;
-      display: flex; align-items: center; gap: 16px;
-      border-bottom: 1px solid #1d4ed8;
-    }
-    header h1 { font-size: 1.6rem; font-weight: 700; }
-    header p { font-size: 0.9rem; color: #93c5fd; margin-top: 4px; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0a0f1a; color: #e2e8f0; min-height: 100vh; }
+    header { background: linear-gradient(135deg, #0c1a3a, #1e3a8a); padding: 18px 32px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #1d4ed8; }
+    .header-left { display: flex; align-items: center; gap: 16px; }
     .icon { font-size: 2rem; }
-
+    header h1 { font-size: 1.5rem; font-weight: 700; }
+    header p { font-size: 0.88rem; color: #93c5fd; margin-top: 3px; }
+    .lang-toggle { display: flex; background: #070d1a; border: 1px solid #1d4ed8; border-radius: 8px; overflow: hidden; flex-shrink: 0; }
+    .lang-btn { padding: 7px 14px; font-size: 0.82rem; font-weight: 700; cursor: pointer; border: none; background: transparent; color: #60a5fa; transition: all 0.2s; opacity: 0.5; }
+    .lang-btn.active { background: #1d4ed8; color: white; opacity: 1; }
     .progress-bar { height: 3px; background: #0c1a3a; }
     .progress-fill { height: 100%; background: linear-gradient(90deg, #2563eb, #60a5fa); transition: width 0.4s ease; }
-
-    .layout {
-      display: grid;
-      grid-template-columns: 280px 1fr;
-      height: calc(100vh - 91px);
-    }
-
-    /* Sidebar */
+    .layout { display: grid; grid-template-columns: 280px 1fr; height: calc(100vh - 91px); }
     .sidebar { background: #070d1a; border-right: 1px solid #0c1a3a; overflow-y: auto; padding: 16px 0; }
     .sidebar-title { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #2563eb; padding: 0 16px 12px; }
     .exercise-item { padding: 12px 16px; cursor: pointer; border-left: 3px solid transparent; transition: all 0.2s; display: flex; align-items: center; gap: 10px; }
@@ -51,475 +35,340 @@
     .badge-intermediaire { background: #14532d; color: #86efac; }
     .badge-avance { background: #3b1f5e; color: #c084fc; }
     .badge-expert { background: #7f1d1d; color: #fca5a5; }
-
-    /* Main */
     .main { display: grid; grid-template-rows: auto auto 1fr auto; overflow: hidden; }
-
     .exercise-header { padding: 16px 28px; background: #070d1a; border-bottom: 1px solid #0c1a3a; }
     .exercise-header h2 { font-size: 1.05rem; font-weight: 700; margin-bottom: 6px; }
     .exercise-header p { font-size: 0.88rem; color: #94a3b8; line-height: 1.6; white-space: pre-line; }
     .hint-box { margin-top: 10px; padding: 10px 14px; background: #0c1a3a; border-left: 3px solid #3b82f6; border-radius: 4px; font-size: 0.82rem; color: #93c5fd; display: none; }
-
-    /* Schema display */
     .schema-zone { padding: 10px 28px; background: #070d1a; border-bottom: 1px solid #0c1a3a; overflow-x: auto; }
     .schema-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #475569; margin-bottom: 8px; }
     .tables-row { display: flex; gap: 16px; flex-wrap: wrap; }
-
     .db-table { border-collapse: collapse; font-size: 0.78rem; font-family: monospace; background: #0a0f1a; border-radius: 6px; overflow: hidden; flex-shrink: 0; }
     .db-table caption { text-align: left; font-size: 0.72rem; font-weight: 700; color: #60a5fa; padding: 4px 8px; background: #0c1a3a; border-radius: 6px 6px 0 0; }
     .db-table th { background: #0c1a3a; color: #93c5fd; padding: 4px 12px; border: 1px solid #1d4ed8; font-weight: 600; }
     .db-table td { padding: 3px 12px; border: 1px solid #0c1a3a; color: #cbd5e1; }
     .db-table tr:nth-child(even) td { background: #070d1a; }
-
-    /* Editor */
     .editor-zone { display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; }
     .editor-panel, .output-panel { display: flex; flex-direction: column; overflow: hidden; }
     .panel-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #475569; padding: 8px 16px; background: #05080f; border-bottom: 1px solid #0c1a3a; display: flex; align-items: center; gap: 8px; }
     .dot { width: 8px; height: 8px; border-radius: 50%; }
-    .dot-blue { background: #3b82f6; }
-    .dot-green { background: #22c55e; }
-
-    textarea#sql-editor {
-      flex: 1; background: #070d1a; color: #e2e8f0;
-      border: none; padding: 16px;
-      font-family: 'Fira Code', 'Courier New', monospace;
-      font-size: 0.9rem; line-height: 1.7; resize: none; outline: none;
-      border-right: 1px solid #0c1a3a; tab-size: 2;
-    }
-
+    .dot-blue { background: #3b82f6; } .dot-green { background: #22c55e; }
+    textarea#sql-editor { flex: 1; background: #070d1a; color: #e2e8f0; border: none; padding: 16px; font-family: 'Fira Code','Courier New',monospace; font-size: 0.9rem; line-height: 1.7; resize: none; outline: none; border-right: 1px solid #0c1a3a; tab-size: 2; }
     .output-scroll { flex: 1; overflow: auto; padding: 12px; }
-
     .result-table { border-collapse: collapse; font-size: 0.8rem; font-family: monospace; width: 100%; }
     .result-table th { background: #0c1a3a; color: #93c5fd; padding: 5px 12px; border: 1px solid #1d4ed8; text-align: left; }
     .result-table td { padding: 4px 12px; border: 1px solid #0c1a3a; color: #cbd5e1; }
     .result-table tr:nth-child(even) td { background: #070d1a; }
-
     .output-msg { padding: 16px; font-family: monospace; font-size: 0.88rem; line-height: 1.7; color: #475569; }
     .output-msg.error { color: #f87171; }
-    .output-msg.success { color: #86efac; }
-
-    /* Toolbar */
     .toolbar { padding: 10px 28px; background: #05080f; border-top: 1px solid #0c1a3a; display: flex; align-items: center; gap: 10px; }
     button { padding: 8px 18px; border-radius: 8px; border: none; font-size: 0.87rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-    #btn-run { background: #1d4ed8; color: white; }
-    #btn-run:hover { background: #2563eb; }
-    #btn-check { background: #166534; color: #86efac; }
-    #btn-check:hover { background: #15803d; }
-    #btn-hint { background: transparent; color: #3b82f6; border: 1px solid #0c1a3a; }
-    #btn-hint:hover { background: #0c1a3a; }
-    #btn-reset { background: transparent; color: #475569; border: 1px solid #1e293b; margin-left: auto; }
-    #btn-reset:hover { color: #94a3b8; }
+    #btn-run { background: #1d4ed8; color: white; } #btn-run:hover { background: #2563eb; }
+    #btn-check { background: #166534; color: #86efac; } #btn-check:hover { background: #15803d; }
+    #btn-hint { background: transparent; color: #3b82f6; border: 1px solid #0c1a3a; } #btn-hint:hover { background: #0c1a3a; }
+    #btn-reset { background: transparent; color: #475569; border: 1px solid #1e293b; margin-left: auto; } #btn-reset:hover { color: #94a3b8; }
     .status-msg { font-size: 0.85rem; font-weight: 600; padding: 6px 14px; border-radius: 6px; display: none; }
     .status-msg.ok { background: #166534; color: #86efac; display: inline-block; }
     .status-msg.fail { background: #7f1d1d; color: #f87171; display: inline-block; }
-
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #0a0f1a; }
-    ::-webkit-scrollbar-thumb { background: #0c1a3a; border-radius: 3px; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; } ::-webkit-scrollbar-track { background: #0a0f1a; } ::-webkit-scrollbar-thumb { background: #0c1a3a; border-radius: 3px; }
   </style>
 </head>
 <body>
-
 <header>
-  <div class="icon">🗄️</div>
-  <div>
-    <h1>SQL Trainer</h1>
-    <p>Apprends SQL de débutant à expert — requêtes réelles dans le navigateur</p>
+  <div class="header-left">
+    <div class="icon">🗄️</div>
+    <div><h1>SQL Trainer</h1><p data-i18n="subtitle">Apprends SQL de débutant à expert — requêtes réelles dans le navigateur</p></div>
+  </div>
+  <div class="lang-toggle">
+    <button class="lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button class="lang-btn" onclick="setLang('en')">🇬🇧 EN</button>
   </div>
 </header>
-
-<div class="progress-bar">
-  <div class="progress-fill" id="progress-fill" style="width:0%"></div>
-</div>
-
+<div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
 <div class="layout">
   <aside class="sidebar" id="sidebar"></aside>
-
   <div class="main">
     <div class="exercise-header">
-      <h2 id="ex-title">Chargement...</h2>
+      <h2 id="ex-title"></h2>
       <p id="ex-description"></p>
       <div class="hint-box" id="hint-box"></div>
     </div>
-
     <div class="schema-zone">
-      <div class="schema-label">🗂️ Structure de la base de données</div>
+      <div class="schema-label" data-i18n="schema">🗂️ Structure de la base de données</div>
       <div class="tables-row" id="schema-container"></div>
     </div>
-
     <div class="editor-zone">
       <div class="editor-panel">
-        <div class="panel-label"><span class="dot dot-blue"></span> Ta requête SQL</div>
-        <textarea id="sql-editor" spellcheck="false" placeholder="Écris ta requête SQL ici..."></textarea>
+        <div class="panel-label"><span class="dot dot-blue"></span><span data-i18n="your-query">Ta requête SQL</span></div>
+        <textarea id="sql-editor" spellcheck="false"></textarea>
       </div>
       <div class="output-panel">
-        <div class="panel-label"><span class="dot dot-green"></span> Résultat</div>
+        <div class="panel-label"><span class="dot dot-green"></span><span data-i18n="result">Résultat</span></div>
         <div class="output-scroll" id="output-scroll">
-          <div class="output-msg">▶ Clique sur "Exécuter" pour lancer ta requête...</div>
+          <div class="output-msg" data-i18n="waiting">▶ Clique sur "Exécuter" pour lancer ta requête...</div>
         </div>
       </div>
     </div>
-
     <div class="toolbar">
-      <button id="btn-run">▶ Exécuter</button>
-      <button id="btn-check">✓ Valider</button>
-      <button id="btn-hint">💡 Indice</button>
+      <button id="btn-run" data-i18n="run">▶ Exécuter</button>
+      <button id="btn-check" data-i18n="validate">✓ Valider</button>
+      <button id="btn-hint" data-i18n="hint">💡 Indice</button>
       <span class="status-msg" id="status-msg"></span>
-      <button id="btn-reset">↺ Réinitialiser</button>
+      <button id="btn-reset" data-i18n="reset">↺ Réinitialiser</button>
     </div>
   </div>
 </div>
 
 <script>
-// ── BASE DE DONNÉES ───────────────────────────────────────
+const UI = {
+  fr: {
+    subtitle: 'Apprends SQL de débutant à expert — requêtes réelles dans le navigateur',
+    schema: '🗂️ Structure de la base de données',
+    'your-query': 'Ta requête SQL', result: 'Résultat',
+    waiting: '▶ Clique sur "Exécuter" pour lancer ta requête...',
+    run: '▶ Exécuter', validate: '✓ Valider', hint: '💡 Indice', reset: '↺ Réinitialiser',
+    exercises: 'Exercices', ok: '🎉 Parfait, exercice validé !', fail: '✗ Résultat incorrect, réessaie !',
+    'sql-error': '✗ Erreur SQL', 'no-result': '(Requête exécutée — aucun résultat)',
+    'enter-query': '⚠️ Écris une requête !',
+    levels: { debutant:'Débutant', intermediaire:'Intermédiaire', avance:'Avancé', expert:'Expert' }
+  },
+  en: {
+    subtitle: 'Learn SQL from beginner to expert — real queries in your browser',
+    schema: '🗂️ Database structure',
+    'your-query': 'Your SQL query', result: 'Result',
+    waiting: '▶ Click "Run" to execute your query...',
+    run: '▶ Run', validate: '✓ Validate', hint: '💡 Hint', reset: '↺ Reset',
+    exercises: 'Exercises', ok: '🎉 Perfect, exercise completed!', fail: '✗ Incorrect result, try again!',
+    'sql-error': '✗ SQL Error', 'no-result': '(Query executed — no results)',
+    'enter-query': '⚠️ Write a query first!',
+    levels: { debutant:'Beginner', intermediaire:'Intermediate', avance:'Advanced', expert:'Expert' }
+  }
+};
+
 const SCHEMA_SQL = `
-CREATE TABLE employes (
-  id INTEGER PRIMARY KEY,
-  nom TEXT,
-  prenom TEXT,
-  departement TEXT,
-  salaire INTEGER,
-  annee_entree INTEGER
-);
-INSERT INTO employes VALUES
-(1,'Martin','Alice','Vente',3200,2019),
-(2,'Bernard','Bob','IT',4500,2017),
-(3,'Dubois','Clara','RH',2800,2021),
-(4,'Leroy','David','IT',5100,2015),
-(5,'Moreau','Eva','Vente',3800,2020),
-(6,'Simon','Frank','RH',2600,2022),
-(7,'Laurent','Grace','IT',4200,2018),
-(8,'Petit','Hugo','Vente',3100,2021),
-(9,'Garcia','Iris','Marketing',3600,2019),
-(10,'Roux','Jules','Marketing',3900,2016);
-
-CREATE TABLE departements (
-  id INTEGER PRIMARY KEY,
-  nom TEXT,
-  budget INTEGER,
-  chef TEXT
-);
-INSERT INTO departements VALUES
-(1,'Vente',150000,'Martin Alice'),
-(2,'IT',250000,'Leroy David'),
-(3,'RH',80000,'Dubois Clara'),
-(4,'Marketing',120000,'Garcia Iris'),
-(5,'Direction',300000,'PDG');
-
-CREATE TABLE commandes (
-  id INTEGER PRIMARY KEY,
-  client TEXT,
-  produit TEXT,
-  montant INTEGER,
-  date_cmd TEXT,
-  employe_id INTEGER
-);
-INSERT INTO commandes VALUES
-(1,'Acme Corp','Laptop',1200,'2024-01-15',2),
-(2,'Beta SA','Téléphone',450,'2024-01-20',1),
-(3,'Gamma Inc','Tablette',680,'2024-02-05',5),
-(4,'Acme Corp','Écran',320,'2024-02-10',2),
-(5,'Delta Ltd','Laptop',1200,'2024-02-18',4),
-(6,'Beta SA','Clavier',85,'2024-03-01',1),
-(7,'Epsilon','Souris',45,'2024-03-12',7),
-(8,'Gamma Inc','Laptop',1200,'2024-03-20',5),
-(9,'Zeta Corp','Écran',320,'2024-04-02',9),
-(10,'Acme Corp','Téléphone',450,'2024-04-15',1);
+CREATE TABLE employes (id INTEGER PRIMARY KEY, nom TEXT, prenom TEXT, departement TEXT, salaire INTEGER, annee_entree INTEGER);
+INSERT INTO employes VALUES (1,'Martin','Alice','Vente',3200,2019),(2,'Bernard','Bob','IT',4500,2017),(3,'Dubois','Clara','RH',2800,2021),(4,'Leroy','David','IT',5100,2015),(5,'Moreau','Eva','Vente',3800,2020),(6,'Simon','Frank','RH',2600,2022),(7,'Laurent','Grace','IT',4200,2018),(8,'Petit','Hugo','Vente',3100,2021),(9,'Garcia','Iris','Marketing',3600,2019),(10,'Roux','Jules','Marketing',3900,2016);
+CREATE TABLE departements (id INTEGER PRIMARY KEY, nom TEXT, budget INTEGER, chef TEXT);
+INSERT INTO departements VALUES (1,'Vente',150000,'Martin Alice'),(2,'IT',250000,'Leroy David'),(3,'RH',80000,'Dubois Clara'),(4,'Marketing',120000,'Garcia Iris'),(5,'Direction',300000,'PDG');
+CREATE TABLE commandes (id INTEGER PRIMARY KEY, client TEXT, produit TEXT, montant INTEGER, date_cmd TEXT, employe_id INTEGER);
+INSERT INTO commandes VALUES (1,'Acme Corp','Laptop',1200,'2024-01-15',2),(2,'Beta SA','Téléphone',450,'2024-01-20',1),(3,'Gamma Inc','Tablette',680,'2024-02-05',5),(4,'Acme Corp','Écran',320,'2024-02-10',2),(5,'Delta Ltd','Laptop',1200,'2024-02-18',4),(6,'Beta SA','Clavier',85,'2024-03-01',1),(7,'Epsilon','Souris',45,'2024-03-12',7),(8,'Gamma Inc','Laptop',1200,'2024-03-20',5),(9,'Zeta Corp','Écran',320,'2024-04-02',9),(10,'Acme Corp','Téléphone',450,'2024-04-15',1);
 `;
 
-// ── EXERCICES ─────────────────────────────────────────────
 const exercises = [
-  // DÉBUTANT
-  {
-    id:1, level:'debutant', name:'SELECT — Tout afficher',
+  { id:1, level:'debutant', tables:['employes'],
+    name:'SELECT — Tout afficher', name_en:'SELECT — Show everything',
     description:'Affiche tous les employés de la table employes avec toutes leurs colonnes.',
+    description_en:'Display all employees from the employes table with all their columns.',
     hint:'Le symbole * signifie "toutes les colonnes". Syntaxe : SELECT * FROM table',
-    starter:'-- Écris ta requête ici\n',
-    tables:['employes'],
-    check: rows => rows.length === 10
-  },
-  {
-    id:2, level:'debutant', name:'SELECT — Colonnes spécifiques',
+    hint_en:'The * symbol means "all columns". Syntax: SELECT * FROM table',
+    starter:'-- Écris ta requête ici\n', check:rows=>rows.length===10 },
+  { id:2, level:'debutant', tables:['employes'],
+    name:'SELECT — Colonnes spécifiques', name_en:'SELECT — Specific columns',
     description:'Affiche uniquement le prénom et le salaire de tous les employés.',
+    description_en:'Display only the first name and salary of all employees.',
     hint:'Liste les colonnes séparées par des virgules après SELECT.',
-    starter:'SELECT ...\nFROM employes',
-    tables:['employes'],
-    check: rows => rows.length === 10 && rows[0] && 'prenom' in rows[0] && 'salaire' in rows[0] && !('nom' in rows[0])
-  },
-  {
-    id:3, level:'debutant', name:'WHERE — Filtrer par département',
+    hint_en:'List columns separated by commas after SELECT.',
+    starter:'SELECT ...\nFROM employes', check:rows=>rows.length===10&&rows[0]&&'prenom' in rows[0]&&'salaire' in rows[0]&&!('nom' in rows[0]) },
+  { id:3, level:'debutant', tables:['employes'],
+    name:'WHERE — Filtrer par département', name_en:'WHERE — Filter by department',
     description:'Affiche uniquement les employés du département "IT".',
+    description_en:'Display only the employees from the "IT" department.',
     hint:'WHERE filtre les lignes selon une condition. Les valeurs texte sont entre guillemets simples.',
-    starter:'SELECT *\nFROM employes\nWHERE ...',
-    tables:['employes'],
-    check: rows => rows.length === 3 && rows.every(r => r.departement === 'IT')
-  },
-  {
-    id:4, level:'debutant', name:'ORDER BY — Trier par salaire',
+    hint_en:'WHERE filters rows based on a condition. Text values go in single quotes.',
+    starter:"SELECT *\nFROM employes\nWHERE ...", check:rows=>rows.length===3&&rows.every(r=>r.departement==='IT') },
+  { id:4, level:'debutant', tables:['employes'],
+    name:'ORDER BY — Trier par salaire', name_en:'ORDER BY — Sort by salary',
     description:'Affiche tous les employés triés par salaire du plus élevé au plus bas.',
+    description_en:'Display all employees sorted by salary from highest to lowest.',
     hint:'ORDER BY colonne DESC pour tri décroissant, ASC pour croissant (défaut).',
-    starter:'SELECT *\nFROM employes\nORDER BY ...',
-    tables:['employes'],
-    check: rows => {
-      if (rows.length !== 10) return false;
-      for (let i = 0; i < rows.length - 1; i++)
-        if (rows[i].salaire < rows[i+1].salaire) return false;
-      return true;
-    }
-  },
-  {
-    id:5, level:'debutant', name:'LIMIT — Les 5 premiers',
+    hint_en:'ORDER BY column DESC for descending, ASC for ascending (default).',
+    starter:'SELECT *\nFROM employes\nORDER BY ...', check:rows=>{if(rows.length!==10)return false;for(let i=0;i<rows.length-1;i++)if(rows[i].salaire<rows[i+1].salaire)return false;return true;} },
+  { id:5, level:'debutant', tables:['employes'],
+    name:'LIMIT — Les 5 premiers', name_en:'LIMIT — Top 5',
     description:'Affiche les 5 employés avec le salaire le plus élevé.',
+    description_en:'Display the 5 employees with the highest salary.',
     hint:'Combine ORDER BY salaire DESC avec LIMIT 5.',
-    starter:'SELECT *\nFROM employes\nORDER BY salaire DESC\nLIMIT ...',
-    tables:['employes'],
-    check: rows => rows.length === 5 && rows[0].salaire === 5100
-  },
-
-  // INTERMÉDIAIRE
-  {
-    id:6, level:'intermediaire', name:'COUNT — Compter des lignes',
+    hint_en:'Combine ORDER BY salaire DESC with LIMIT 5.',
+    starter:'SELECT *\nFROM employes\nORDER BY salaire DESC\nLIMIT ...', check:rows=>rows.length===5&&rows[0].salaire===5100 },
+  { id:6, level:'intermediaire', tables:['employes'],
+    name:'COUNT — Compter des lignes', name_en:'COUNT — Count rows',
     description:'Compte le nombre total d\'employés dans la table.\nLe résultat doit avoir une colonne nommée "total".',
+    description_en:'Count the total number of employees in the table.\nThe result must have a column named "total".',
     hint:'COUNT(*) compte toutes les lignes. Utilise AS pour nommer la colonne : COUNT(*) AS total',
-    starter:'SELECT COUNT(*) AS total\nFROM ...',
-    tables:['employes'],
-    check: rows => rows.length === 1 && rows[0].total === 10
-  },
-  {
-    id:7, level:'intermediaire', name:'AVG — Salaire moyen',
+    hint_en:'COUNT(*) counts all rows. Use AS to name the column: COUNT(*) AS total',
+    starter:'SELECT COUNT(*) AS total\nFROM ...', check:rows=>rows.length===1&&rows[0].total===10 },
+  { id:7, level:'intermediaire', tables:['employes'],
+    name:'AVG — Salaire moyen', name_en:'AVG — Average salary',
     description:'Calcule le salaire moyen de tous les employés.\nNomme le résultat "salaire_moyen".',
+    description_en:'Calculate the average salary of all employees.\nName the result "salaire_moyen".',
     hint:'AVG(colonne) calcule la moyenne. Pense à arrondir avec ROUND(AVG(...), 0).',
-    starter:'SELECT ROUND(AVG(salaire), 0) AS salaire_moyen\nFROM ...',
-    tables:['employes'],
-    check: rows => rows.length === 1 && rows[0].salaire_moyen === 3680
-  },
-  {
-    id:8, level:'intermediaire', name:'GROUP BY — Par département',
+    hint_en:'AVG(column) calculates the average. Consider rounding with ROUND(AVG(...), 0).',
+    starter:'SELECT ROUND(AVG(salaire), 0) AS salaire_moyen\nFROM ...', check:rows=>rows.length===1&&rows[0].salaire_moyen===3680 },
+  { id:8, level:'intermediaire', tables:['employes'],
+    name:'GROUP BY — Par département', name_en:'GROUP BY — By department',
     description:'Affiche le salaire moyen par département, trié du plus élevé au plus bas.\nColonnes attendues : departement, salaire_moyen.',
+    description_en:'Display the average salary per department, sorted highest to lowest.\nExpected columns: departement, salaire_moyen.',
     hint:'GROUP BY regroupe les lignes par valeur. Utilise ORDER BY à la fin pour trier.',
-    starter:'SELECT departement, ROUND(AVG(salaire), 0) AS salaire_moyen\nFROM employes\nGROUP BY ...\nORDER BY salaire_moyen DESC',
-    tables:['employes'],
-    check: rows => {
-      if (rows.length !== 4) return false;
-      return rows[0].departement === 'IT' && 'salaire_moyen' in rows[0];
-    }
-  },
-  {
-    id:9, level:'intermediaire', name:'HAVING — Filtrer les groupes',
+    hint_en:'GROUP BY groups rows by value. Use ORDER BY at the end to sort.',
+    starter:'SELECT departement, ROUND(AVG(salaire), 0) AS salaire_moyen\nFROM employes\nGROUP BY ...\nORDER BY salaire_moyen DESC', check:rows=>rows.length===4&&rows[0].departement==='IT'&&'salaire_moyen' in rows[0] },
+  { id:9, level:'intermediaire', tables:['employes'],
+    name:'HAVING — Filtrer les groupes', name_en:'HAVING — Filter groups',
     description:'Affiche uniquement les départements dont le salaire moyen est supérieur à 3500€.',
+    description_en:'Display only the departments with an average salary greater than 3500€.',
     hint:'HAVING filtre les groupes (après GROUP BY), comme WHERE filtre les lignes.',
-    starter:'SELECT departement, ROUND(AVG(salaire), 0) AS salaire_moyen\nFROM employes\nGROUP BY departement\nHAVING ...',
-    tables:['employes'],
-    check: rows => rows.length === 2 && rows.every(r => r.salaire_moyen > 3500)
-  },
-  {
-    id:10, level:'intermediaire', name:'INNER JOIN — Relier deux tables',
+    hint_en:'HAVING filters groups (after GROUP BY), just like WHERE filters rows.',
+    starter:'SELECT departement, ROUND(AVG(salaire), 0) AS salaire_moyen\nFROM employes\nGROUP BY departement\nHAVING ...', check:rows=>rows.length===2&&rows.every(r=>r.salaire_moyen>3500) },
+  { id:10, level:'intermediaire', tables:['employes','departements'],
+    name:'INNER JOIN — Relier deux tables', name_en:'INNER JOIN — Join two tables',
     description:'Affiche le prénom de chaque employé avec le budget de son département.\nColonnes : prenom, departement, budget.',
+    description_en:'Display each employee\'s first name with their department\'s budget.\nColumns: prenom, departement, budget.',
     hint:'JOIN relie deux tables sur une colonne commune. Ici : employes.departement = departements.nom',
-    starter:'SELECT e.prenom, e.departement, d.budget\nFROM employes e\nINNER JOIN departements d\nON ...',
-    tables:['employes','departements'],
-    check: rows => rows.length === 10 && 'budget' in rows[0] && 'prenom' in rows[0]
-  },
-
-  // AVANCÉ
-  {
-    id:11, level:'avance', name:'LEFT JOIN — Tous les départements',
+    hint_en:'JOIN links two tables on a common column. Here: employes.departement = departements.nom',
+    starter:'SELECT e.prenom, e.departement, d.budget\nFROM employes e\nINNER JOIN departements d\nON ...', check:rows=>rows.length===10&&'budget' in rows[0]&&'prenom' in rows[0] },
+  { id:11, level:'avance', tables:['employes','departements'],
+    name:'LEFT JOIN — Tous les départements', name_en:'LEFT JOIN — All departments',
     description:'Affiche tous les départements avec le nombre d\'employés dans chacun.\nInclus les départements sans employés. Colonnes : nom, nb_employes.',
+    description_en:'Display all departments with the number of employees in each.\nInclude departments with no employees. Columns: nom, nb_employes.',
     hint:'LEFT JOIN garde toutes les lignes de la table de gauche. COUNT(e.id) retourne 0 si aucun employé.',
-    starter:'SELECT d.nom, COUNT(e.id) AS nb_employes\nFROM departements d\nLEFT JOIN employes e ON d.nom = e.departement\nGROUP BY ...',
-    tables:['employes','departements'],
-    check: rows => rows.length === 5 && rows.some(r => r.nb_employes === 0)
-  },
-  {
-    id:12, level:'avance', name:'Sous-requête — Au-dessus de la moyenne',
+    hint_en:'LEFT JOIN keeps all rows from the left table. COUNT(e.id) returns 0 if no employees.',
+    starter:'SELECT d.nom, COUNT(e.id) AS nb_employes\nFROM departements d\nLEFT JOIN employes e ON d.nom = e.departement\nGROUP BY ...', check:rows=>rows.length===5&&rows.some(r=>r.nb_employes===0) },
+  { id:12, level:'avance', tables:['employes'],
+    name:'Sous-requête — Au-dessus de la moyenne', name_en:'Subquery — Above average',
     description:'Affiche les employés dont le salaire est supérieur au salaire moyen de l\'entreprise.',
+    description_en:'Display employees whose salary is above the company average salary.',
     hint:'Utilise une sous-requête dans le WHERE : WHERE salaire > (SELECT AVG(salaire) FROM employes)',
-    starter:'SELECT prenom, nom, salaire\nFROM employes\nWHERE salaire > (\n  SELECT ...\n)',
-    tables:['employes'],
-    check: rows => rows.length === 4 && rows.every(r => r.salaire > 3680)
-  },
-  {
-    id:13, level:'avance', name:'JOIN + GROUP BY — Ventes par employé',
-    description:'Affiche le total des ventes (montant) par employé (prénom) depuis la table commandes.\nColonnes : prenom, total_ventes. Trié par total décroissant.',
+    hint_en:'Use a subquery in WHERE: WHERE salaire > (SELECT AVG(salaire) FROM employes)',
+    starter:'SELECT prenom, nom, salaire\nFROM employes\nWHERE salaire > (\n  SELECT ...\n)', check:rows=>rows.length===4&&rows.every(r=>r.salaire>3680) },
+  { id:13, level:'avance', tables:['employes','commandes'],
+    name:'JOIN + GROUP BY — Ventes par employé', name_en:'JOIN + GROUP BY — Sales per employee',
+    description:'Affiche le total des ventes par employé (prénom).\nColonnes : prenom, total_ventes. Trié par total décroissant.',
+    description_en:'Display total sales per employee (first name).\nColumns: prenom, total_ventes. Sorted by total descending.',
     hint:'JOIN employes et commandes sur employe_id = employes.id, puis GROUP BY et SUM.',
-    starter:'SELECT e.prenom, SUM(c.montant) AS total_ventes\nFROM commandes c\nJOIN employes e ON ...\nGROUP BY e.prenom\nORDER BY total_ventes DESC',
-    tables:['employes','commandes'],
-    check: rows => rows.length > 0 && rows[0].total_ventes >= rows[rows.length-1].total_ventes && 'prenom' in rows[0]
-  },
-  {
-    id:14, level:'avance', name:'DISTINCT — Valeurs uniques',
+    hint_en:'JOIN employes and commandes on employe_id = employes.id, then GROUP BY and SUM.',
+    starter:'SELECT e.prenom, SUM(c.montant) AS total_ventes\nFROM commandes c\nJOIN employes e ON ...\nGROUP BY e.prenom\nORDER BY total_ventes DESC', check:rows=>rows.length>0&&rows[0].total_ventes>=rows[rows.length-1].total_ventes&&'prenom' in rows[0] },
+  { id:14, level:'avance', tables:['commandes'],
+    name:'DISTINCT — Valeurs uniques', name_en:'DISTINCT — Unique values',
     description:'Affiche la liste des clients uniques qui ont passé une commande, triés par ordre alphabétique.',
+    description_en:'Display the list of unique clients who placed an order, sorted alphabetically.',
     hint:'DISTINCT élimine les doublons. Utilise ORDER BY client pour trier.',
-    starter:'SELECT DISTINCT ...\nFROM commandes\nORDER BY client',
-    tables:['commandes'],
-    check: rows => rows.length === 6 && rows[0].client === 'Acme Corp'
-  },
-
-  // EXPERT
-  {
-    id:15, level:'expert', name:'CTE — WITH (Common Table Expression)',
-    description:'Utilise un CTE pour d\'abord calculer le salaire moyen par département,\npuis afficher seulement ceux au-dessus de 3500€.\nColonnes : departement, salaire_moyen.',
+    hint_en:'DISTINCT removes duplicates. Use ORDER BY client to sort.',
+    starter:'SELECT DISTINCT ...\nFROM commandes\nORDER BY client', check:rows=>rows.length===6&&rows[0].client==='Acme Corp' },
+  { id:15, level:'expert', tables:['employes'],
+    name:'CTE — WITH (Common Table Expression)', name_en:'CTE — WITH (Common Table Expression)',
+    description:'Utilise un CTE pour calculer le salaire moyen par département,\npuis afficher seulement ceux au-dessus de 3500€.',
+    description_en:'Use a CTE to calculate the average salary per department,\nthen display only those above 3500€.',
     hint:'Syntaxe CTE : WITH nom_cte AS (SELECT ...) SELECT * FROM nom_cte WHERE ...',
-    starter:'WITH moyennes AS (\n  SELECT departement, ROUND(AVG(salaire),0) AS salaire_moyen\n  FROM employes\n  GROUP BY departement\n)\nSELECT *\nFROM moyennes\nWHERE ...',
-    tables:['employes'],
-    check: rows => rows.length === 2 && rows.every(r => r.salaire_moyen > 3500)
-  },
-  {
-    id:16, level:'expert', name:'CASE WHEN — Catégoriser les salaires',
-    description:'Affiche chaque employé avec une colonne "categorie" :\n• salaire >= 4500 → "Senior"\n• salaire >= 3500 → "Confirmé"\n• Sinon → "Junior"\nColonnes : prenom, salaire, categorie.',
+    hint_en:'CTE syntax: WITH cte_name AS (SELECT ...) SELECT * FROM cte_name WHERE ...',
+    starter:'WITH moyennes AS (\n  SELECT departement, ROUND(AVG(salaire),0) AS salaire_moyen\n  FROM employes\n  GROUP BY departement\n)\nSELECT *\nFROM moyennes\nWHERE ...', check:rows=>rows.length===2&&rows.every(r=>r.salaire_moyen>3500) },
+  { id:16, level:'expert', tables:['employes'],
+    name:'CASE WHEN — Catégoriser les salaires', name_en:'CASE WHEN — Categorize salaries',
+    description:'Affiche chaque employé avec une colonne "categorie" :\n• salaire >= 4500 → "Senior"\n• salaire >= 3500 → "Confirmé"\n• Sinon → "Junior"',
+    description_en:'Display each employee with a "categorie" column:\n• salary >= 4500 → "Senior"\n• salary >= 3500 → "Confirmé"\n• Otherwise → "Junior"',
     hint:'CASE WHEN cond1 THEN val1 WHEN cond2 THEN val2 ELSE val3 END AS categorie',
-    starter:'SELECT prenom, salaire,\n  CASE\n    WHEN salaire >= 4500 THEN \'Senior\'\n    WHEN ... THEN \'Confirmé\'\n    ELSE \'Junior\'\n  END AS categorie\nFROM employes\nORDER BY salaire DESC',
-    tables:['employes'],
-    check: rows => {
-      if (rows.length !== 10) return false;
-      const seniors = rows.filter(r => r.categorie === 'Senior');
-      const confirmes = rows.filter(r => r.categorie === 'Confirmé');
-      const juniors = rows.filter(r => r.categorie === 'Junior');
-      return seniors.length === 2 && confirmes.length === 3 && juniors.length === 5;
-    }
-  },
-  {
-    id:17, level:'expert', name:'Triple JOIN — Requête complexe',
-    description:'Affiche pour chaque commande : le client, le produit, le montant ET le prénom de l\'employé ET le département de l\'employé.\nColonnes : client, produit, montant, prenom, departement.',
-    hint:'Joins : commandes → employes (sur employe_id = employes.id). C\'est un double JOIN.',
-    starter:'SELECT c.client, c.produit, c.montant, e.prenom, e.departement\nFROM commandes c\nJOIN employes e ON ...\nORDER BY c.montant DESC',
-    tables:['employes','commandes'],
-    check: rows => rows.length === 10 && 'client' in rows[0] && 'prenom' in rows[0] && 'departement' in rows[0]
-  },
+    hint_en:'CASE WHEN cond1 THEN val1 WHEN cond2 THEN val2 ELSE val3 END AS categorie',
+    starter:"SELECT prenom, salaire,\n  CASE\n    WHEN salaire >= 4500 THEN 'Senior'\n    WHEN ... THEN 'Confirmé'\n    ELSE 'Junior'\n  END AS categorie\nFROM employes\nORDER BY salaire DESC", check:rows=>{if(rows.length!==10)return false;const s=rows.filter(r=>r.categorie==='Senior'),c=rows.filter(r=>r.categorie==='Confirmé'),j=rows.filter(r=>r.categorie==='Junior');return s.length===2&&c.length===3&&j.length===5;} },
+  { id:17, level:'expert', tables:['employes','commandes'],
+    name:'Triple JOIN — Requête complexe', name_en:'Triple JOIN — Complex query',
+    description:'Affiche pour chaque commande : le client, le produit, le montant, le prénom et le département de l\'employé.\nColonnes : client, produit, montant, prenom, departement.',
+    description_en:'Display for each order: the client, product, amount, employee\'s first name and department.\nColumns: client, produit, montant, prenom, departement.',
+    hint:'Joins : commandes → employes (sur employe_id = employes.id).',
+    hint_en:'Join: commandes → employes (on employe_id = employes.id).',
+    starter:'SELECT c.client, c.produit, c.montant, e.prenom, e.departement\nFROM commandes c\nJOIN employes e ON ...\nORDER BY c.montant DESC', check:rows=>rows.length===10&&'client' in rows[0]&&'prenom' in rows[0]&&'departement' in rows[0] },
 ];
 
-// ── ENGINE ─────────────────────────────────────────────────
-let db = null;
-let current = 0;
-let done = new Set(JSON.parse(localStorage.getItem('sql_done') || '[]'));
-let hintVisible = false;
+let db=null, lang=localStorage.getItem('lang')||'fr', current=0, hintVisible=false;
+let done=new Set(JSON.parse(localStorage.getItem('sql_done')||'[]'));
 
-initSQL().then(() => { load(); });
+initSQL().then(()=>setLang(lang));
 
-async function initSQL() {
-  const SQL = await initSqlJs({ locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/${f}` });
-  db = new SQL.Database();
-  db.run(SCHEMA_SQL);
+async function initSQL(){
+  const SQL=await initSqlJs({locateFile:f=>`https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/${f}`});
+  db=new SQL.Database(); db.run(SCHEMA_SQL);
 }
 
-function runQuery(sql) {
-  try {
-    const result = db.exec(sql);
-    if (!result.length) return { rows: [], cols: [], empty: true };
-    const { columns, values } = result[0];
-    const rows = values.map(v => {
-      const obj = {};
-      columns.forEach((c, i) => obj[c] = v[i]);
-      return obj;
-    });
-    return { rows, cols: columns };
-  } catch(e) {
-    return { error: e.message };
-  }
+function setLang(l){
+  lang=l; localStorage.setItem('lang',l);
+  document.querySelectorAll('.lang-btn').forEach((b,i)=>b.classList.toggle('active',(i===0&&l==='fr')||(i===1&&l==='en')));
+  document.querySelectorAll('[data-i18n]').forEach(el=>{const key=el.dataset.i18n;if(UI[l][key])el.textContent=UI[l][key];});
+  load();
 }
 
-function renderResult({ rows, cols, empty, error }) {
-  const el = document.getElementById('output-scroll');
-  if (error) { el.innerHTML = `<div class="output-msg error">❌ Erreur SQL :\n${error}</div>`; return; }
-  if (empty || !rows.length) { el.innerHTML = `<div class="output-msg">(Requête exécutée — aucun résultat)</div>`; return; }
-  let html = `<table class="result-table"><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>`;
-  rows.slice(0, 50).forEach(r => { html += `<tr>${cols.map(c=>`<td>${r[c] ?? 'NULL'}</td>`).join('')}</tr>`; });
-  html += '</tbody></table>';
-  if (rows.length > 50) html += `<div class="output-msg" style="color:#64748b">(${rows.length} lignes — 50 affichées)</div>`;
-  el.innerHTML = html;
-}
-
-function renderSchema(tableNames) {
-  const container = document.getElementById('schema-container');
-  container.innerHTML = '';
-  tableNames.forEach(name => {
-    const res = db.exec(`SELECT * FROM ${name} LIMIT 5`);
-    if (!res.length) return;
-    const { columns, values } = res[0];
-    let html = `<table class="db-table"><caption>📋 ${name}</caption><thead><tr>${columns.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>`;
-    values.forEach(row => { html += `<tr>${row.map(v=>`<td>${v}</td>`).join('')}</tr>`; });
-    html += '</tbody></table>';
-    container.innerHTML += html;
-  });
-}
-
-function load() {
-  const ex = exercises[current];
-  document.getElementById('ex-title').textContent = `#${ex.id} — ${ex.name}`;
-  document.getElementById('ex-description').textContent = ex.description;
-  document.getElementById('hint-box').textContent = '💡 ' + ex.hint;
-  document.getElementById('hint-box').style.display = 'none';
-  document.getElementById('sql-editor').value = ex.starter || '';
-  document.getElementById('output-scroll').innerHTML = '<div class="output-msg">▶ Clique sur "Exécuter" pour lancer ta requête...</div>';
-  document.getElementById('status-msg').className = 'status-msg';
-  hintVisible = false;
-  renderSchema(ex.tables);
-  buildSidebar();
-  updateProgress();
-}
-
-function buildSidebar() {
-  const sidebar = document.getElementById('sidebar');
-  sidebar.innerHTML = `<div class="sidebar-title">Exercices (${done.size}/${exercises.length})</div>`;
-  exercises.forEach((ex, i) => {
-    const div = document.createElement('div');
-    div.className = 'exercise-item' + (i===current?' active':'') + (done.has(ex.id)?' done':'');
-    const labels = {debutant:'Débutant',intermediaire:'Intermédiaire',avance:'Avancé',expert:'Expert'};
-    div.innerHTML = `
-      <div class="ex-icon">${done.has(ex.id)?'✓':ex.id}</div>
-      <div class="ex-info">
-        <div class="ex-name">${ex.name}</div>
-        <div class="ex-level"><span class="level-badge badge-${ex.level}">${labels[ex.level]}</span></div>
-      </div>`;
-    div.onclick = () => { current = i; load(); };
+function buildSidebar(){
+  const ui=UI[lang], sidebar=document.getElementById('sidebar');
+  sidebar.innerHTML=`<div class="sidebar-title">${ui.exercises} (${done.size}/${exercises.length})</div>`;
+  exercises.forEach((ex,i)=>{
+    const div=document.createElement('div');
+    div.className='exercise-item'+(i===current?' active':'')+(done.has(ex.id)?' done':'');
+    const name=lang==='en'?(ex.name_en||ex.name):ex.name;
+    div.innerHTML=`<div class="ex-icon">${done.has(ex.id)?'✓':ex.id}</div><div class="ex-info"><div class="ex-name">${name}</div><div class="ex-level"><span class="level-badge badge-${ex.level}">${ui.levels[ex.level]}</span></div></div>`;
+    div.onclick=()=>{current=i;load();};
     sidebar.appendChild(div);
   });
 }
 
-function updateProgress() {
-  document.getElementById('progress-fill').style.width = (done.size/exercises.length*100)+'%';
+function runQuery(sql){
+  try{const result=db.exec(sql);if(!result.length)return{rows:[],cols:[],empty:true};const{columns,values}=result[0];const rows=values.map(v=>{const obj={};columns.forEach((c,i)=>obj[c]=v[i]);return obj;});return{rows,cols:columns};}
+  catch(e){return{error:e.message};}
 }
 
-function check() {
-  const sql = document.getElementById('sql-editor').value.trim();
-  const status = document.getElementById('status-msg');
-  if (!sql) { status.textContent='⚠️ Écris une requête !'; status.className='status-msg fail'; return; }
-  const result = runQuery(sql);
-  renderResult(result);
-  if (result.error) { status.textContent='✗ Erreur SQL'; status.className='status-msg fail'; return; }
-  if (exercises[current].check(result.rows)) {
-    status.textContent='🎉 Parfait, exercice validé !';
-    status.className='status-msg ok';
-    done.add(exercises[current].id);
-    localStorage.setItem('sql_done', JSON.stringify([...done]));
-    buildSidebar(); updateProgress();
-    if (current < exercises.length-1) setTimeout(()=>{ current++; load(); }, 1400);
-  } else {
-    status.textContent='✗ Résultat incorrect, réessaie !';
-    status.className='status-msg fail';
-  }
+function renderResult({rows,cols,empty,error}){
+  const el=document.getElementById('output-scroll'), ui=UI[lang];
+  if(error){el.innerHTML=`<div class="output-msg error">❌ ${ui['sql-error']}:\n${error}</div>`;return;}
+  if(empty||!rows.length){el.innerHTML=`<div class="output-msg">${ui['no-result']}</div>`;return;}
+  let html=`<table class="result-table"><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>`;
+  rows.slice(0,50).forEach(r=>{html+=`<tr>${cols.map(c=>`<td>${r[c]??'NULL'}</td>`).join('')}</tr>`;});
+  html+='</tbody></table>';
+  if(rows.length>50)html+=`<div class="output-msg" style="color:#64748b">(${rows.length} rows — 50 shown)</div>`;
+  el.innerHTML=html;
 }
 
-document.getElementById('btn-run').onclick = () => {
-  const sql = document.getElementById('sql-editor').value.trim();
-  if (!sql) return;
-  renderResult(runQuery(sql));
+function renderSchema(tableNames){
+  const container=document.getElementById('schema-container'); container.innerHTML='';
+  tableNames.forEach(name=>{
+    const res=db.exec(`SELECT * FROM ${name} LIMIT 5`); if(!res.length)return;
+    const{columns,values}=res[0];
+    let html=`<table class="db-table"><caption>📋 ${name}</caption><thead><tr>${columns.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>`;
+    values.forEach(row=>{html+=`<tr>${row.map(v=>`<td>${v}</td>`).join('')}</tr>`;});
+    html+='</tbody></table>'; container.innerHTML+=html;
+  });
+}
+
+function load(){
+  const ex=exercises[current], ui=UI[lang];
+  const name=lang==='en'?(ex.name_en||ex.name):ex.name;
+  const desc=lang==='en'?(ex.description_en||ex.description):ex.description;
+  const hint=lang==='en'?(ex.hint_en||ex.hint):ex.hint;
+  document.getElementById('ex-title').textContent=`#${ex.id} — ${name}`;
+  document.getElementById('ex-description').textContent=desc;
+  document.getElementById('hint-box').textContent='💡 '+hint;
+  document.getElementById('hint-box').style.display='none';
+  document.getElementById('sql-editor').value=ex.starter||'';
+  document.getElementById('output-scroll').innerHTML=`<div class="output-msg">${ui.waiting}</div>`;
   document.getElementById('status-msg').className='status-msg';
-};
-document.getElementById('btn-check').onclick = check;
-document.getElementById('btn-hint').onclick = () => {
-  hintVisible = !hintVisible;
-  document.getElementById('hint-box').style.display = hintVisible ? 'block' : 'none';
-};
-document.getElementById('btn-reset').onclick = () => {
-  document.getElementById('sql-editor').value = exercises[current].starter || '';
-  document.getElementById('output-scroll').innerHTML = '<div class="output-msg">▶ Clique sur "Exécuter" pour lancer ta requête...</div>';
-  document.getElementById('status-msg').className='status-msg';
-};
-document.getElementById('sql-editor').addEventListener('keydown', e => {
-  if (e.ctrlKey && e.key==='Enter') { e.preventDefault(); check(); }
-  if (e.key==='Tab') { e.preventDefault(); const s=e.target,st=s.selectionStart; s.value=s.value.substring(0,st)+'  '+s.value.substring(s.selectionEnd); s.selectionStart=s.selectionEnd=st+2; }
-});
+  hintVisible=false;
+  renderSchema(ex.tables); buildSidebar();
+  document.getElementById('progress-fill').style.width=(done.size/exercises.length*100)+'%';
+}
+
+function check(){
+  const sql=document.getElementById('sql-editor').value.trim();
+  const status=document.getElementById('status-msg'), ui=UI[lang];
+  if(!sql){status.textContent=ui['enter-query'];status.className='status-msg fail';return;}
+  const result=runQuery(sql); renderResult(result);
+  if(result.error){status.textContent=ui['sql-error'];status.className='status-msg fail';return;}
+  if(exercises[current].check(result.rows)){
+    status.textContent=ui.ok; status.className='status-msg ok';
+    done.add(exercises[current].id); localStorage.setItem('sql_done',JSON.stringify([...done]));
+    buildSidebar(); document.getElementById('progress-fill').style.width=(done.size/exercises.length*100)+'%';
+    if(current<exercises.length-1)setTimeout(()=>{current++;load();},1400);
+  } else { status.textContent=ui.fail; status.className='status-msg fail'; }
+}
+
+document.getElementById('btn-run').onclick=()=>{const sql=document.getElementById('sql-editor').value.trim();if(sql)renderResult(runQuery(sql));document.getElementById('status-msg').className='status-msg';};
+document.getElementById('btn-check').onclick=check;
+document.getElementById('btn-hint').onclick=()=>{hintVisible=!hintVisible;document.getElementById('hint-box').style.display=hintVisible?'block':'none';};
+document.getElementById('btn-reset').onclick=()=>{document.getElementById('sql-editor').value=exercises[current].starter||'';document.getElementById('output-scroll').innerHTML=`<div class="output-msg">${UI[lang].waiting}</div>`;document.getElementById('status-msg').className='status-msg';};
+document.getElementById('sql-editor').addEventListener('keydown',e=>{if(e.ctrlKey&&e.key==='Enter'){e.preventDefault();check();}if(e.key==='Tab'){e.preventDefault();const s=e.target,st=s.selectionStart;s.value=s.value.substring(0,st)+'  '+s.value.substring(s.selectionEnd);s.selectionStart=s.selectionEnd=st+2;}});
 </script>
 </body>
 </html>
