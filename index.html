@@ -71,6 +71,76 @@
     .status-msg.ok { background: #166534; color: #86efac; display: inline-block; }
     .status-msg.fail { background: #7f1d1d; color: #f87171; display: inline-block; }
     ::-webkit-scrollbar { width: 6px; height: 6px; } ::-webkit-scrollbar-track { background: #0a0f1a; } ::-webkit-scrollbar-thumb { background: #0c1a3a; border-radius: 3px; }
+    .theme-btn { padding: 7px 10px; background: transparent; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; cursor: pointer; font-size: 1rem; margin-left: 8px; }
+    .theme-btn:hover { background: rgba(255,255,255,0.1); }
+
+    body.light { background: #f8fafc; color: #1e293b; }
+    body.light header { background: linear-gradient(135deg, #4338ca, #6366f1) !important; }
+    body.light .sidebar { background: #f1f5f9; border-color: #e2e8f0; }
+    body.light .sidebar-title { color: #6366f1; }
+    body.light .exercise-item:hover { background: #e2e8f0; }
+    body.light .exercise-item.active { background: #e0e7ff; border-color: #6366f1; }
+    body.light .ex-icon { background: #e0e7ff; color: #6366f1; border-color: #c7d2fe; }
+    body.light .exercise-item.done .ex-icon { background: #dcfce7; color: #16a34a; border-color: #86efac; }
+    body.light .exercise-item.active .ex-icon { background: #6366f1; color: white; }
+    body.light .ex-level { color: #94a3b8; }
+    body.light .exercise-header { background: #f1f5f9; border-color: #e2e8f0; }
+    body.light .exercise-header p { color: #475569; }
+    body.light .hint-box { background: #e0e7ff; border-color: #6366f1; color: #4338ca; }
+    body.light .panel-label { background: #e2e8f0; border-color: #cbd5e1; color: #64748b; }
+    body.light textarea, body.light #sql-editor, body.light #code-editor { background: #ffffff; color: #1e293b; border-color: #e2e8f0; }
+    body.light .output-scroll, body.light #output { background: #f8fafc; color: #475569; }
+    body.light .result-table th { background: #e0e7ff; color: #4338ca; border-color: #c7d2fe; }
+    body.light .result-table td { border-color: #e2e8f0; color: #1e293b; }
+    body.light .result-table tr:nth-child(even) td { background: #f1f5f9; }
+    body.light .expected-box { background: #f0fdf4; border-color: #86efac; color: #16a34a; }
+    body.light .toolbar { background: #e2e8f0; border-color: #cbd5e1; }
+    body.light .lang-toggle { background: #e2e8f0; border-color: #c7d2fe; }
+    body.light .lang-btn { color: #64748b; }
+    body.light .lang-btn.active { background: #6366f1; color: white; }
+    body.light .theme-btn { border-color: rgba(0,0,0,0.2); }
+    body.light .theme-btn:hover { background: rgba(0,0,0,0.05); }
+    body.light #btn-reset { color: #64748b; border-color: #cbd5e1; }
+    body.light .spreadsheet { background: #ffffff; }
+    body.light .spreadsheet th { background: #e0e7ff; color: #4338ca; border-color: #c7d2fe; }
+    body.light .spreadsheet td { border-color: #e2e8f0; color: #1e293b; }
+    body.light .spreadsheet td.row-num { background: #e0e7ff; color: #4338ca; }
+    body.light .spreadsheet td.target { background: #f0fdf4; border-color: #22c55e; color: #16a34a; }
+    body.light .spreadsheet td.label-col { color: #64748b; }
+    body.light .mcq-btn { background: #f8fafc; border-color: #e2e8f0; color: #1e293b; }
+    body.light .mcq-btn:hover { background: #e0e7ff; border-color: #6366f1; }
+    body.light .answer-zone, body.light .mcq-zone, body.light .spreadsheet-zone, body.light .schema-zone { background: #f1f5f9; border-color: #e2e8f0; }
+    body.light .formula-prefix { background: #e0e7ff; color: #4338ca; border-color: #c7d2fe; }
+    body.light #formula-input { background: #ffffff; border-color: #e2e8f0; color: #1e293b; }
+    body.light .db-table { background: #ffffff; }
+    body.light .db-table caption { background: #e0e7ff; color: #4338ca; }
+    body.light .db-table th { background: #e0e7ff; color: #4338ca; border-color: #c7d2fe; }
+    body.light .db-table td { border-color: #e2e8f0; color: #1e293b; }
+    body.light .db-table tr:nth-child(even) td { background: #f1f5f9; }
+    body.light .output-msg { color: #64748b; }
+    body.light .output-msg.error { color: #dc2626; }
+    body.light .firebase-banner { background: #e0e7ff; border-color: #c7d2fe; color: #4338ca; }
+    body.light .question-card { background: #ffffff; border-color: #e2e8f0; }
+    body.light .timer { background: #ffffff; border-color: #e2e8f0; color: #b45309; }
+    body.light .option-btn { background: #f8fafc; border-color: #e2e8f0; color: #1e293b; }
+    body.light .option-btn:hover:not(:disabled) { background: #e0e7ff; border-color: #6366f1; }
+    body.light .score-dot { background: #e2e8f0; }
+    body.light .stat-card { background: #ffffff; border-color: #e2e8f0; }
+    body.light .stat-val { color: #1e293b; }
+    body.light .progress-bar { background: #e2e8f0; }
+    body.light .results-hero .results-title { color: #1e293b; }
+    body.light .lb-table th { color: #64748b; border-color: #e2e8f0; }
+    body.light .lb-table td { border-color: #f1f5f9; }
+    body.light .lb-table tr:hover td { background: #f1f5f9; }
+    body.light .lb-my-row td { background: #e0e7ff !important; }
+    body.light .empty-lb { color: #94a3b8; }
+    body.light .modal { background: #ffffff; border-color: #e2e8f0; }
+    body.light .url-input { background: #f8fafc; border-color: #c7d2fe; color: #1e293b; }
+    body.light .name-input { background: #f8fafc; border-color: #c7d2fe; color: #1e293b; }
+    body.light .rule-card { background: #ffffff; border-color: #e2e8f0; }
+    body.light .welcome-sub { color: #64748b; }
+    body.light .btn-secondary { border-color: #e2e8f0; color: #64748b; }
+    body.light .btn-secondary:hover { border-color: #6366f1; color: #4338ca; }
   </style>
 </head>
 <body>
@@ -79,9 +149,12 @@
     <div class="icon">🗄️</div>
     <div><h1>SQL Trainer</h1><p data-i18n="subtitle">Apprends SQL de débutant à expert — requêtes réelles dans le navigateur</p></div>
   </div>
-  <div class="lang-toggle">
-    <button class="lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
-    <button class="lang-btn" onclick="setLang('en')">🇬🇧 EN</button>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+      <button class="lang-btn" onclick="setLang('en')">🇬🇧 EN</button>
+    </div>
+    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">☀️</button>
   </div>
 </header>
 <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
@@ -369,6 +442,17 @@ document.getElementById('btn-check').onclick=check;
 document.getElementById('btn-hint').onclick=()=>{hintVisible=!hintVisible;document.getElementById('hint-box').style.display=hintVisible?'block':'none';};
 document.getElementById('btn-reset').onclick=()=>{document.getElementById('sql-editor').value=exercises[current].starter||'';document.getElementById('output-scroll').innerHTML=`<div class="output-msg">${UI[lang].waiting}</div>`;document.getElementById('status-msg').className='status-msg';};
 document.getElementById('sql-editor').addEventListener('keydown',e=>{if(e.ctrlKey&&e.key==='Enter'){e.preventDefault();check();}if(e.key==='Tab'){e.preventDefault();const s=e.target,st=s.selectionStart;s.value=s.value.substring(0,st)+'  '+s.value.substring(s.selectionEnd);s.selectionStart=s.selectionEnd=st+2;}});
+
+let theme = localStorage.getItem('theme') || 'dark';
+function applyTheme(t) {
+  theme = t;
+  localStorage.setItem('theme', t);
+  document.body.classList.toggle('light', t === 'light');
+  const btn = document.getElementById('theme-btn');
+  if (btn) btn.textContent = t === 'light' ? '🌙' : '☀️';
+}
+function toggleTheme() { applyTheme(theme === 'dark' ? 'light' : 'dark'); }
+applyTheme(theme);
 </script>
 </body>
 </html>
